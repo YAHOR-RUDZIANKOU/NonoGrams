@@ -1,7 +1,6 @@
 import { createPictureMenu } from "./createPictureMenu.js";
 import { puzzles } from "./puzzles.js";
 
-
 export function createMenu() {
   const container = document.createElement("div");
   container.classList.add("container");
@@ -46,15 +45,14 @@ export function createMenu() {
 
   container.appendChild(menuWrapper);
 
-
-  const chooseRow=document.createElement('div');
-  chooseRow.classList.add('choose__row');
+  const chooseRow = document.createElement("div");
+  chooseRow.classList.add("choose__row");
 
   const choosePicture = document.createElement("div");
   choosePicture.textContent = "Now choose the kind of result you’d like to see :";
   choosePicture.classList.add("none", "choose__result");
 
-  chooseRow.appendChild(choosePicture)
+  chooseRow.appendChild(choosePicture);
   container.appendChild(chooseRow);
 
   document.body.appendChild(container);
@@ -63,11 +61,11 @@ export function createMenu() {
     choosePicture.classList.remove("none");
     const currentValue = event.target.value;
     if (currentValue === "Easy") {
-      createPictureMenu(puzzles.easy)
+      createPictureMenu(puzzles.easy, currentValue);
     } else if (currentValue === "Middle") {
-      createPictureMenu(puzzles.middle)
+      createPictureMenu(puzzles.middle, currentValue);
     } else {
-      createPictureMenu(puzzles.hard)
+      createPictureMenu(puzzles.hard, currentValue);
     }
   });
 }

@@ -1,5 +1,5 @@
 import { startTime } from "./createNonogramGrid.js";
-import { endTime } from "./checkResult.js";
+import { endTime, winMusic } from "./checkResult.js";
 import { createMenu } from "./createMenu.js";
 import { changeItemMenu } from "./createPictureMenu.js";
 
@@ -69,9 +69,8 @@ export function handleResize(maxRowHintLength) {
       columnHintsWrapper.style.paddingLeft = `${maxRowHintLength * 35}px`;
     } else if (width > 650 && width <= 800) {
       columnHintsWrapper.style.paddingLeft = `${maxRowHintLength * 25}px`;
-    } else if ( width < 651) {
+    } else if (width < 651) {
       columnHintsWrapper.style.paddingLeft = `${maxRowHintLength * 22}px`;
-      console.log("тут");
     }
   }
 }
@@ -152,6 +151,8 @@ export function createWinnerPopUp() {
   img.addEventListener("click", () => {
     document.documentElement.classList.remove("no__flip");
     let newElementMain = document.querySelector(".container");
+    winMusic.pause();
+    winMusic.currentTime = 0;
     if (newElementMain) {
       removeElement(newElementMain);
     }
@@ -174,4 +175,12 @@ function formatTime(ms) {
   const paddedSeconds = String(seconds).padStart(2, "0");
 
   return `${paddedMinutes}:${paddedSeconds}`;
+}
+
+export function musicSetting(music) {
+  music.play();
+  setTimeout(() => {
+    music.pause();
+    music.currentTime = 0;
+  }, 300);
 }

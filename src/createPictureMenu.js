@@ -2,7 +2,7 @@ import { createNonogramGrid } from "./createNonogramGrid.js";
 import { handleResize } from "./utils.js";
 
   // let skipNextClick = false;
-export function createPictureMenu(obj) {
+export function createPictureMenu(obj,level) {
   //   console.log(obj);
 
   let secColumn = document.querySelector(".choose__wrapper");
@@ -49,7 +49,7 @@ export function createPictureMenu(obj) {
       chooseSelected.innerText = event.target.innerText + "  ▼";
 
       let currentPicture = event.target.innerText;
-      const maxRowHintLength = createNonogramGrid(obj[currentPicture]);
+      const maxRowHintLength = createNonogramGrid(obj[currentPicture],level,currentPicture);
       window.addEventListener("resize", () => handleResize(maxRowHintLength));
     });
   });

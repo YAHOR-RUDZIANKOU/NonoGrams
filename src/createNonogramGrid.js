@@ -1,12 +1,24 @@
-import { getRowHints, getColumnHints, removeElement, handleResize } from "./utils.js";
+import { getRowHints, getColumnHints, removeElement, handleResize, musicSetting } from "./utils.js";
 import { checkResult } from "./checkResult.js";
 
+let leftClickBtn = new Audio("./music/clickBTN.mp3");
+let rightClickBtn = new Audio("./music/right__button.mp3");
+let comeBackMusic = new Audio("./music/comeBack.mp3");
+
 export let startTime;
-export function createNonogramGrid(arr) {
+export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) {
+  let lastArray = savedPlayerGrid;
+
   console.log(arr);
+  // console.log(level);
+  // console.log(picture);
   let newElementMain = document.querySelector(".wrapper");
+  let newElementBtn = document.querySelector(".buttons__wrapper");
   if (newElementMain) {
     removeElement(newElementMain);
+  }
+  if (newElementBtn) {
+    removeElement(newElementBtn);
   }
 
   // создание главной игровой площади
@@ -32,6 +44,12 @@ export function createNonogramGrid(arr) {
       itemBoard.setAttribute("data-col", col);
       boardRow.appendChild(itemBoard);
       if ((col + 1) % 5 === 0) itemBoard.classList.add("border__right");
+      // провера с сохранённой игрой
+      if (lastArray) {
+        if (lastArray[row][col] === 1) {
+          itemBoard.classList.add("bg__black");
+        }
+      }
     }
     wrapperMainBoard.appendChild(boardRow);
   }
@@ -86,7 +104,6 @@ export function createNonogramGrid(arr) {
   // создание верхней вспомогательной "оси"
 
   const columnHints = getColumnHints(arr);
-  // console.log(columnHints);
   const maxColumnHintLength = Math.max(...columnHints.map((h) => h.length));
 
   const hintColumn = document.createElement("div");
@@ -128,45 +145,139 @@ export function createNonogramGrid(arr) {
   document.body.appendChild(container);
 
   let checkWrapper = document.createElement("div");
-  checkWrapper.classList.add("check__result-wrapper");
+  checkWrapper.classList.add("buttons__wrapper");
+
   let checkButton = document.createElement("button");
-  checkButton.classList.add("check__result-btn");
+  checkButton.classList.add("buttons-general");
   checkButton.textContent = "Check";
 
+  let resetButton = document.createElement("button");
+  resetButton.classList.add("buttons-general");
+  resetButton.textContent = "Reset Game";
+
   checkWrapper.appendChild(checkButton);
-  wrapper.appendChild(checkWrapper);
-  container.appendChild(wrapper);
+  checkWrapper.appendChild(resetButton);
+
+  // wrapper.appendChild(checkWrapper);
+  container.appendChild(checkWrapper);
   document.body.appendChild(container);
 
   let allBoardItems = Array.from(document.querySelectorAll(".board__item"));
-  const playerGrid = Array.from({ length: arr.length }, () => Array(arr.length).fill(0));
+  // let playerGrid = Array.from({ length: arr.length }, () => Array(arr.length).fill(0));
+
+  let playerGrid;
+  if (lastArray) {
+    playerGrid = lastArray.map((row) => [...row]); // Копируем
+  } else {
+    playerGrid = Array.from({ length: arr.length }, () => Array(arr.length).fill(0));
+  }
 
   checkButton.addEventListener("click", () => {
     checkResult(playerGrid, arr);
   });
 
-  console.log(playerGrid);
+  resetButton.addEventListener("click", () => {
+    playerGrid = Array.from({ length: arr.length }, () => Array(arr.length).fill(0));
+    allBoardItems.forEach((value) => {
+      if (value.classList.contains("bg__black")) {
+        value.classList.remove("bg__black");
+      }
+      if ((value.innerText = "X")) {
+        value.innerText = "";
+      }
+    });
+  });
 
-  let firstTimeFlag=true;
+  let firstTimeFlag = true;
   allBoardItems.forEach((value) => {
     value.addEventListener("click", (event) => {
       value.classList.toggle("bg__black");
       const row = Number(value.getAttribute("data-row"));
       const col = Number(value.getAttribute("data-col"));
-      if(firstTimeFlag){
-        startTime=Date.now();
-        firstTimeFlag=false;
+      if (firstTimeFlag) {
+        startTime = Date.now();
+
+        let saveGame = document.createElement("button");
+        saveGame.classList.add("buttons-general");
+        saveGame.textContent = "Save Game";
+        checkWrapper.appendChild(saveGame);
+
+        let continueGame = document.createElement("button");
+        continueGame.classList.add("buttons-general");
+        continueGame.textContent = "Resume Last";
+        checkWrapper.appendChild(continueGame);
+
+        saveGame.addEventListener("click", () => {
+          // console.log("999");
+          // console.log(playerGrid);
+          let gameState = {
+            difficulty: level,
+            resultPicture: picture,
+            arrAnswer: arr,
+            lastVersionArr: playerGrid,
+          };
+          localStorage.setItem("savedGame", JSON.stringify(gameState));
+          console.log(gameState);
+        });
+
+        continueGame.addEventListener("click", () => {
+          const savedGame = localStorage.getItem("savedGame");
+          const gameState = JSON.parse(savedGame);
+
+          // // меняем значение уровня
+          // const select = document.querySelector(".menu__levels");
+          // const selectedOption = select.options[select.selectedIndex];
+          // selectedOption.text = `${gameState.difficulty}`;
+
+          // меняем значеие картинки
+          let chooseSelected = document.querySelector(".choose__selected");
+          chooseSelected.innerText = `${gameState.resultPicture}  ▼`;
+
+          wrapper.remove();
+          checkWrapper.remove();
+
+          createNonogramGrid(
+            gameState.arrAnswer,
+            gameState.difficulty,
+            gameState.resultPicture,
+            gameState.lastVersionArr
+          );
+          console.log(gameState);
+        });
+
+        firstTimeFlag = false;
       }
-      // console.log(row);
-      // console.log(col);
       if (playerGrid[row][col] === 1) {
         playerGrid[row][col] = 0;
+        musicSetting(comeBackMusic);
       } else {
         playerGrid[row][col] = 1;
+        musicSetting(leftClickBtn);
       }
-      // console.log(playerGrid)
+    });
+  });
+
+  allBoardItems.forEach((value) => {
+    value.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+
+    value.addEventListener("mousedown", (event) => {
+      if (!value.innerText) {
+        if (event.button === 2) {
+          value.innerText = "X";
+          musicSetting(rightClickBtn);
+        }
+      } else {
+        if (event.button === 2) {
+          value.innerText = "";
+          musicSetting(comeBackMusic);
+        }
+      }
     });
   });
 
   return maxRowHintLength;
 }
+
+// localStorage.removeItem("savedGame");
