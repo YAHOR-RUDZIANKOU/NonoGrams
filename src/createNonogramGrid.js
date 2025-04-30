@@ -1,4 +1,4 @@
-import { getRowHints, getColumnHints, removeElement, handleResize, musicSetting, formatTime } from "./utils.js";
+import { getRowHints, getColumnHints, removeElement, handleResize, musicSetting, checkPicture } from "./utils.js";
 import { checkResult } from "./checkResult.js";
 
 let leftClickBtn = new Audio("./music/clickBTN.mp3");
@@ -198,7 +198,7 @@ export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) 
       const col = Number(value.getAttribute("data-col"));
       if (firstTimeFlag) {
         startTime = Date.now();
-        console.log(startTime);
+        // console.log(startTime);
 
         let saveGame = document.createElement("button");
         saveGame.classList.add("buttons-general");
@@ -211,8 +211,8 @@ export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) 
         checkWrapper.appendChild(continueGame);
 
         saveGame.addEventListener("click", () => {
+          const savedGame = localStorage.getItem("savedGame");
           if (localStorage.getItem("savedGame") !== null) {
-            const savedGame = localStorage.getItem("savedGame");
             const gameState = JSON.parse(savedGame);
             saveTime = Date.now() - startTime + gameState.time;
           } else {
@@ -229,6 +229,7 @@ export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) 
           localStorage.setItem("savedGame", JSON.stringify(gameState));
           wrapper.remove();
           checkWrapper.remove();
+          checkPicture();
         });
 
         continueGame.addEventListener("click", () => {

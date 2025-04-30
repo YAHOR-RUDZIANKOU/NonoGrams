@@ -115,12 +115,28 @@ export function createRepeatPopUp() {
 
 export function createWinnerPopUp() {
   let result;
-  if (localStorage.getItem("savedGame") === null) {
-    let distanse = endTime - startTime;
+  let distanse;
+  let picture = document.querySelector(".choose__selected").innerHTML;
+  picture = picture.slice(0, -2);
+  let obj = JSON.parse(localStorage.getItem("savedGame"));
+  console.log(obj);
+  // console.log(!obj)
+  // console.log(typeof(picture))
+  // console.log(typeof(obj.resultPicture))
+  // console.log(obj.resultPicture.trim()===picture.trim())
+
+  if (!obj || obj.resultPicture.trim() !== picture.trim()) {
+    distanse = endTime - startTime;
     result = formatTime(distanse);
+    console.log("aaaaa");
   } else {
-    let distanse = endTime - startTime + saveTime;
+    distanse = endTime - startTime + obj.time;
     result = formatTime(distanse);
+    console.log(endTime);
+    console.log(startTime);
+    console.log(obj.time);
+
+    console.log(distanse);
     localStorage.removeItem("savedGame");
   }
 
@@ -172,6 +188,8 @@ export function createWinnerPopUp() {
   setTimeout(() => {
     modal.classList.add("change__top");
   }, 0);
+
+  return distanse;
 }
 
 export function formatTime(ms) {
@@ -191,4 +209,15 @@ export function musicSetting(music) {
     music.pause();
     music.currentTime = 0;
   }, 300);
+}
+
+export function checkPicture() {
+  let localObj = JSON.parse(localStorage.getItem("savedGame"));
+
+  if (localObj) {
+    let noClickPicture = localObj.resultPicture;
+    // console.log(noClickPicture);
+    const li = document.querySelector(`li[value="${noClickPicture}"]`);
+    li.classList.add("unclickable");
+  }
 }

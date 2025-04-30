@@ -1,8 +1,8 @@
 import { createNonogramGrid } from "./createNonogramGrid.js";
-import { handleResize } from "./utils.js";
+import { handleResize, checkPicture } from "./utils.js";
 
-  // let skipNextClick = false;
-export function createPictureMenu(obj,level) {
+// let skipNextClick = false;
+export function createPictureMenu(obj, level) {
   //   console.log(obj);
 
   let secColumn = document.querySelector(".choose__wrapper");
@@ -27,6 +27,7 @@ export function createPictureMenu(obj,level) {
     const ItemLi = document.createElement("li");
     ItemLi.classList.add("choose__item");
     ItemLi.textContent = key;
+    ItemLi.setAttribute("value", key);
     chooseItems.appendChild(ItemLi);
   }
 
@@ -34,8 +35,6 @@ export function createPictureMenu(obj,level) {
   choosePictureWrapper.appendChild(chooseItems);
 
   chooseRow.appendChild(choosePictureWrapper);
-
-
 
   chooseSelected.addEventListener("click", () => {
     chooseItems.classList.toggle("none");
@@ -49,22 +48,24 @@ export function createPictureMenu(obj,level) {
       chooseSelected.innerText = event.target.innerText + "  ▼";
 
       let currentPicture = event.target.innerText;
-      const maxRowHintLength = createNonogramGrid(obj[currentPicture],level,currentPicture);
+      const maxRowHintLength = createNonogramGrid(obj[currentPicture], level, currentPicture);
       window.addEventListener("resize", () => handleResize(maxRowHintLength));
     });
   });
+
+  checkPicture();
 }
 
 export function changeItemMenu(event) {
-  const closed=event.target.closest(".choose__selected");
+  const closed = event.target.closest(".choose__selected");
   const chooseItems = document.querySelector(".choose__items");
   const menuItem = event.target.closest(".choose__items");
-  if(closed){
+  if (closed) {
     chooseItems.classList.add("none");
     document.removeEventListener("click", changeItemMenu, true);
   }
 
-  if (!menuItem &&  !chooseItems.classList.contains("none")) {
+  if (!menuItem && !chooseItems.classList.contains("none")) {
     chooseItems.classList.add("none");
     document.removeEventListener("click", changeItemMenu, true);
   }

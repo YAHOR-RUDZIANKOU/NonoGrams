@@ -221,7 +221,7 @@ option:checked {
 }
 
 .change__top {
-  top: 50%;
+  top: 45%;
 }
 
 .modal__wrapper {
@@ -254,6 +254,24 @@ option:checked {
   justify-content: center;
   align-items: center;
   font-size: 20px;
+}
+
+.highscore-table {
+  margin: 40px auto;
+  border-collapse: collapse;
+}
+
+.highscore-cell {
+  padding: 5px 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+  vertical-align: middle;  
+  border: 1px solid #ccc;   
+}
+
+.unclickable {
+  pointer-events: none;
+  opacity: 0.5; /* необязательно — просто чтобы было видно, что элемент неактивный */
 }
 
 @media (max-width: 651px) {
