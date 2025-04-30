@@ -25,14 +25,17 @@ export function createMenu() {
   // Создаем option элементы
   const easyOption = document.createElement("option");
   easyOption.classList.add("easy__level", "level__generation");
+  easyOption.value = "Easy";   
   easyOption.textContent = "Easy";
 
   const middleOption = document.createElement("option");
   middleOption.classList.add("middle__level", "level__generation");
+  middleOption.value = "Middle"; 
   middleOption.textContent = "Middle";
 
   const hardOption = document.createElement("option");
   hardOption.classList.add("hard__level", "level__generation");
+  hardOption.value = "Hard"; 
   hardOption.textContent = "Hard";
 
   select.appendChild(disableOption);

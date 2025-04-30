@@ -1,4 +1,4 @@
-import { startTime } from "./createNonogramGrid.js";
+import { startTime, saveTime } from "./createNonogramGrid.js";
 import { endTime, winMusic } from "./checkResult.js";
 import { createMenu } from "./createMenu.js";
 import { changeItemMenu } from "./createPictureMenu.js";
@@ -114,8 +114,16 @@ export function createRepeatPopUp() {
 }
 
 export function createWinnerPopUp() {
-  let distanse = endTime - startTime;
-  let result = formatTime(distanse);
+  let result;
+  if (localStorage.getItem("savedGame") === null) {
+    let distanse = endTime - startTime;
+    result = formatTime(distanse);
+  } else {
+    let distanse = endTime - startTime + saveTime;
+    result = formatTime(distanse);
+    localStorage.removeItem("savedGame");
+  }
+
   document.documentElement.classList.add("no__flip");
 
   const backdrop = document.createElement("div");
@@ -166,7 +174,7 @@ export function createWinnerPopUp() {
   }, 0);
 }
 
-function formatTime(ms) {
+export function formatTime(ms) {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;

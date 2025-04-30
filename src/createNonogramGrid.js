@@ -1,4 +1,4 @@
-import { getRowHints, getColumnHints, removeElement, handleResize, musicSetting } from "./utils.js";
+import { getRowHints, getColumnHints, removeElement, handleResize, musicSetting, formatTime } from "./utils.js";
 import { checkResult } from "./checkResult.js";
 
 let leftClickBtn = new Audio("./music/clickBTN.mp3");
@@ -6,9 +6,11 @@ let rightClickBtn = new Audio("./music/right__button.mp3");
 let comeBackMusic = new Audio("./music/comeBack.mp3");
 
 export let startTime;
+export let continueTime;
+export let saveTime;
 export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) {
   let lastArray = savedPlayerGrid;
-
+  
   console.log(arr);
   // console.log(level);
   // console.log(picture);
@@ -196,6 +198,7 @@ export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) 
       const col = Number(value.getAttribute("data-col"));
       if (firstTimeFlag) {
         startTime = Date.now();
+        console.log(startTime);
 
         let saveGame = document.createElement("button");
         saveGame.classList.add("buttons-general");
@@ -208,16 +211,24 @@ export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) 
         checkWrapper.appendChild(continueGame);
 
         saveGame.addEventListener("click", () => {
-          // console.log("999");
-          // console.log(playerGrid);
+          if (localStorage.getItem("savedGame") !== null) {
+            const savedGame = localStorage.getItem("savedGame");
+            const gameState = JSON.parse(savedGame);
+            saveTime = Date.now() - startTime + gameState.time;
+          } else {
+            saveTime = Date.now() - startTime;
+          }
+
           let gameState = {
             difficulty: level,
             resultPicture: picture,
             arrAnswer: arr,
             lastVersionArr: playerGrid,
+            time: saveTime,
           };
           localStorage.setItem("savedGame", JSON.stringify(gameState));
-          console.log(gameState);
+          wrapper.remove();
+          checkWrapper.remove();
         });
 
         continueGame.addEventListener("click", () => {
@@ -225,9 +236,8 @@ export function createNonogramGrid(arr, level, picture, savedPlayerGrid = null) 
           const gameState = JSON.parse(savedGame);
 
           // // меняем значение уровня
-          // const select = document.querySelector(".menu__levels");
-          // const selectedOption = select.options[select.selectedIndex];
-          // selectedOption.text = `${gameState.difficulty}`;
+          const select = document.querySelector(".menu__levels");
+          select.value = gameState.difficulty;
 
           // меняем значеие картинки
           let chooseSelected = document.querySelector(".choose__selected");

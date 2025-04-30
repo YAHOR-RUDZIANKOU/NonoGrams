@@ -23,7 +23,7 @@ export function checkResult(question, answer) {
   }
 
   if (isCorrect) {
-    localStorage.removeItem("savedGame");
+    // localStorage.removeItem("savedGame");
     winMusic.play();
     endTime = Date.now();
     createWinnerPopUp();
